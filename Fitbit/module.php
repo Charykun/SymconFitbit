@@ -228,5 +228,65 @@
         protected function SetValue($ID, $Value)
         {
             if ( GetValue($ID) !== $Value ) { SetValue($ID, $Value); }
-        }             
+        }       
+        
+        protected function CreateIntegerProfile($ProfileName, $Icon, $Präfix, $Suffix, $MinValue, $MaxValue, $StepSize)
+        {
+            $Profile = IPS_VariableProfileExists($ProfileName);
+            if ($Profile === false)
+            {
+                IPS_CreateVariableProfile($ProfileName, 1);
+                IPS_SetVariableProfileIcon($ProfileName,  $Icon);
+                IPS_SetVariableProfileText($ProfileName, $Präfix, $Suffix);
+                IPS_SetVariableProfileValues($ProfileName, $MinValue, $MaxValue, $StepSize);
+            }
+        }         
+        
+        protected function CreateFloatProfile($ProfileName, $Icon, $Präfix, $Suffix, $MinValue, $MaxValue, $StepSize, $Digits)
+        {
+            $Profile = IPS_VariableProfileExists($ProfileName);
+            if ($Profile === false)
+            {
+                IPS_CreateVariableProfile($ProfileName, 2);
+                IPS_SetVariableProfileIcon($ProfileName,  $Icon);
+                IPS_SetVariableProfileText($ProfileName, $Präfix, $Suffix);
+                IPS_SetVariableProfileValues($ProfileName, $MinValue, $MaxValue, $StepSize);
+                IPS_SetVariableProfileDigits($ProfileName, $Digits);
+            }
+        } 
+        
+        protected function CreateStringProfile($ProfileName, $Icon, $Präfix, $Suffix)
+        {
+            $Profile = IPS_VariableProfileExists($ProfileName);
+            if ($Profile === false)
+            {
+                IPS_CreateVariableProfile($ProfileName, 3);
+                IPS_SetVariableProfileIcon($ProfileName,  $Icon);
+                IPS_SetVariableProfileText($ProfileName, $Präfix, $Suffix);
+            }
+        }        
+        
+ 	protected function RegisterHook($Hook, $TargetID)
+	{
+            $ids = IPS_GetInstanceListByModuleID("{015A6EB8-D6E5-4B93-B496-0D3F77AE9FE1}");
+            if(sizeof($ids) > 0) {
+                $hooks = json_decode(IPS_GetProperty($ids[0], "Hooks"), true);
+		$found = false;
+		foreach($hooks as $index => $hook) 
+                {
+                    if($hook['Hook'] == $Hook) 
+                    {
+                    	if($hook['TargetID'] == $TargetID) return;
+			$hooks[$index]['TargetID'] = $TargetID;
+			$found = true;
+                    }
+		}
+		if(!$found) 
+                {
+                    $hooks[] = Array("Hook" => $Hook, "TargetID" => $TargetID);
+		}
+		IPS_SetProperty($ids[0], "Hooks", json_encode($hooks));
+		IPS_ApplyChanges($ids[0]);
+            }
+	}               
     }
