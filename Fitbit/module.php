@@ -1,6 +1,5 @@
 <?php
-    require_once(__DIR__ . "/../Base.php"); 
-    class Fitbit extends BaseModule
+    class Fitbit extends IPSModule
     {
         /**
          * Log Message
@@ -220,4 +219,14 @@
             $response = $this->Update("https://api.fitbit.com/1/user/-/activities/date/$date.json");
             return $response;
         }
+        
+         /**
+         * Set Value
+         * @param integer $ID
+         * @param type $Value
+         */        
+        protected function SetValue($ID, $Value)
+        {
+            if ( GetValue($ID) !== $Value ) { SetValue($ID, $Value); }
+        }             
     }
